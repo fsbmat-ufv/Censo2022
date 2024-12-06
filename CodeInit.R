@@ -6,7 +6,7 @@ library("tidyverse")
 library("data.table")
 library("abjutils")
 #setwd("~/Github/DadosCenso2022")
-url <- "~/GitHub/Censo2022/DicionariosDados/Agregados_por_municipios_alfabetizacao_BR.csv"
+url <- "~/GitHub/Censo2022/Dados/Agregados_por_municipios_alfabetizacao_BR.csv"
 dt <- fread(url,
             encoding = "Latin-1",
             sep = ";",
@@ -38,6 +38,15 @@ dt$alf5559 <- round(100*((dt$V00652-dt$V00748)/dt$V00652), digits = 1)
 dt$alf6064 <- round(100*((dt$V00653-dt$V00748)/dt$V00653), digits = 1)
 dt$alf6599 <- round(100*((dt$V06599-dt$V07599)/dt$V06599), digits = 1)
 
+#Totais por cidade do Brasil
+
+dt <- dt %>%
+        mutate(Total = rowSums(select(., 2:14)))
+dt <- dt %>%
+        mutate(Alfabetizados = rowSums(select(., 15:27)))
+dt <- dt %>% 
+        mutate(NAlfabetizados = Total - Alfabetizados)
+dt$TXAnalf <- round(100*((dt$Total-dt$Alfabetizados)/dt$Total), digits = 5)
 #Taxa de Analfabetismo no Brasil por faixa etaria
 
 #TotBr1519 <- round(100*(sum(dt$V00644)-sum(dt$V00748))/sum(dt$V00644), digits = 1)
@@ -60,6 +69,15 @@ mun <- read_municipality(code_muni="all", year=2022)
 ###############Juntando os bancos de dados
 dt <- left_join(mun, dt, by= c("code_muni" = "CD_MUN"))
 rm(mun)
+
+analf <- dt %>% 
+        st_drop_geometry() %>% 
+        select(4,50) %>% 
+        group_by(abbrev_state) %>% 
+        summarise(Tx=sum(TXAnalf)/n(), quant=n()) %>% 
+        arrange(Tx)
+
+
 ggplot() + geom_sf(data=dt, aes(fill= alf1519))
 
 library(leaflet)
@@ -70,26 +88,28 @@ dt <- dt %>%
         st_transform(crs = 4326)  # EPSG code for WGS84
 # Criar o mapa no Leaflet
 leaflet(data = dt) %>%
-        addTiles() %>%  # Adiciona um mapa base
+        addTiles()%>%
+        setView(lng = -60.7, lat = -15, zoom = 4) %>%  # Adiciona um mapa base
         addPolygons(
                 fillColor = ~colorNumeric(palette = "YlGnBu", domain = dt$alf1519)(alf1519),
                 weight = 0.5,  # Espessura das bordas
-                opacity = 1,
+                opacity = 2,
                 color = "gray",  # Cor da borda
                 dashArray = "3",  # Linhas das bordas
-                fillOpacity = 0.7,  # Transparência do preenchimento
+                #fillOpacity = 0.7,  # Transparência do preenchimento
                 highlight = highlightOptions(weight = 2,
                                              color = "#666",
                                              dashArray = "",
-                                             fillOpacity = 0.9,
+                                             #fillOpacity = 0.9,
                                              bringToFront = TRUE),
                 label = ~lapply(paste0(
                         "<strong>Município:</strong> ", name_muni,
+                        "<br><strong>Estado:</strong> ",name_state,
                         "<br><strong>Valor alf1519:</strong> ", round(alf1519, 2)
                 ), HTML)
         ) %>%
         addLegend(pal = colorNumeric(palette = "YlGnBu", domain = dt$alf1519),
                   values = ~alf1519,
                   opacity = 0.7,
-                  title = "alf1519",
+                  title = "Taxa de Analfabetismo",
                   position = "bottomright")
