@@ -11,8 +11,8 @@ dt <- fread(url,
             encoding = "Latin-1",
             sep = ";",
             header = TRUE)
-dt <- dt %>% select(c(1, 3:15, 107:119))
-names(dt)
+#dt <- dt %>% select(c(1, 3:15, 107:119))
+#names(dt)
 #dt$NM_MUN <- str_trim(dt$NM_MUN) #Remove espacos em Branco
 #dt$NM_MUN <- str_to_upper(dt$NM_MUN) #Caixa Alta
 #dt$NM_MUN <- rm_accent(dt$NM_MUN) #Remove acentos
@@ -41,26 +41,205 @@ dt$alf6599 <- round(100*((dt$V06599-dt$V07599)/dt$V06599), digits = 1)
 #Totais por cidade do Brasil
 
 dt <- dt %>%
-        mutate(Total = rowSums(select(., 2:14)))
+        mutate(Total = rowSums(select(., 3:15)))
 dt <- dt %>%
-        mutate(Alfabetizados = rowSums(select(., 15:27)))
+        mutate(Alfabetizados = rowSums(select(., 16:28)))
 dt <- dt %>% 
         mutate(NAlfabetizados = Total - Alfabetizados)
 dt$TXAnalf <- round(100*((dt$Total-dt$Alfabetizados)/dt$Total), digits = 5)
 #Taxa de Analfabetismo no Brasil por faixa etaria
 
-#TotBr1519 <- round(100*(sum(dt$V00644)-sum(dt$V00748))/sum(dt$V00644), digits = 1)
-#TotBr2024 <- round(100*(sum(dt$V00645)-sum(dt$V00749))/sum(dt$V00645), digits = 1)
-#TotBr2529 <- round(100*(sum(dt$V00646)-sum(dt$V00750))/sum(dt$V00646), digits = 1)
-#TotBr3034 <- round(100*(sum(dt$V00647)-sum(dt$V00751))/sum(dt$V00647), digits = 1)
-#TotBr3539 <- round(100*(sum(dt$V00648)-sum(dt$V00752))/sum(dt$V00648), digits = 1)
-#TotBr4044 <- round(100*(sum(dt$V00649)-sum(dt$V00753))/sum(dt$V00649), digits = 1)
-#TotBr4549 <- round(100*(sum(dt$V00650)-sum(dt$V00754))/sum(dt$V00650), digits = 1)
-#TotBr5054 <- round(100*(sum(dt$V00651)-sum(dt$V00755))/sum(dt$V00651), digits = 1)
-#TotBr5559 <- round(100*(sum(dt$V00652)-sum(dt$V00756))/sum(dt$V00652), digits = 1)
-#TotBr6064 <- round(100*(sum(dt$V00653)-sum(dt$V00757))/sum(dt$V00653), digits = 1)
-#TotBr6599 <- round(100*(sum(dt$V06599)-sum(dt$V07599))/sum(dt$V06599), digits = 1)
-#TotBr6599 <- round(100*(sum(c(dt$V00654, dt$V00655, dt$V00656))-sum(c(dt$V00758, dt$V00759, dt$V00760)))/sum(c(dt$V00654, dt$V00655, dt$V00656)), digits = 1)
+TotBr1519 <- round(100*(sum(dt$V00644)-sum(dt$V00748))/sum(dt$V00644), digits = 1)
+TotBr2024 <- round(100*(sum(dt$V00645)-sum(dt$V00749))/sum(dt$V00645), digits = 1)
+TotBr2529 <- round(100*(sum(dt$V00646)-sum(dt$V00750))/sum(dt$V00646), digits = 1)
+TotBr3034 <- round(100*(sum(dt$V00647)-sum(dt$V00751))/sum(dt$V00647), digits = 1)
+TotBr3539 <- round(100*(sum(dt$V00648)-sum(dt$V00752))/sum(dt$V00648), digits = 1)
+TotBr4044 <- round(100*(sum(dt$V00649)-sum(dt$V00753))/sum(dt$V00649), digits = 1)
+TotBr4549 <- round(100*(sum(dt$V00650)-sum(dt$V00754))/sum(dt$V00650), digits = 1)
+TotBr5054 <- round(100*(sum(dt$V00651)-sum(dt$V00755))/sum(dt$V00651), digits = 1)
+TotBr5559 <- round(100*(sum(dt$V00652)-sum(dt$V00756))/sum(dt$V00652), digits = 1)
+TotBr6064 <- round(100*(sum(dt$V00653)-sum(dt$V00757))/sum(dt$V00653), digits = 1)
+TotBr6599 <- round(100*(sum(dt$V06599)-sum(dt$V07599))/sum(dt$V06599), digits = 1)
+TotBr6599 <- round(100*(sum(c(dt$V00654, dt$V00655, dt$V00656))-sum(c(dt$V00758, dt$V00759, dt$V00760)))/sum(c(dt$V00654, dt$V00655, dt$V00656)), digits = 1)
+
+#Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, segundo a cor ou raca
+#Coluna Totais Brancos
+
+dt <- dt %>%
+        mutate(Branca = rowSums(select(., 
+                                       V00657, 
+                                       V00662, 
+                                       V00667, 
+                                       V00672, 
+                                       V00677, 
+                                       V00682, 
+                                       V00687, 
+                                       V00692, 
+                                       V00697, 
+                                       V00702, 
+                                       V00707, 
+                                       V00712, 
+                                       V00717)))
+#Coluna Totais Brancos Alfabetizados
+dt <- dt %>%
+        mutate(BrancaAlf = rowSums(select(., 
+                                       V00761, 
+                                       V00766, 
+                                       V00771, 
+                                       V00776, 
+                                       V00781, 
+                                       V00786, 
+                                       V00791, 
+                                       V00796, 
+                                       V00801, 
+                                       V00806, 
+                                       V00811, 
+                                       V00816, 
+                                       V00821)))
+
+#Coluna Totais Pretos
+
+dt <- dt %>%
+        mutate(Preto = rowSums(select(., 
+                                       V00658, 
+                                       V00663, 
+                                       V00668, 
+                                       V00673, 
+                                       V00678, 
+                                       V00683, 
+                                       V00688, 
+                                       V00693, 
+                                       V00698, 
+                                       V00703, 
+                                       V00708, 
+                                       V00713, 
+                                       V00718)))
+#Coluna Totais Preto Alfabetizados
+dt <- dt %>%
+        mutate(PretoAlf = rowSums(select(., 
+                                          V00762, 
+                                          V00767, 
+                                          V00772, 
+                                          V00777, 
+                                          V00782, 
+                                          V00787, 
+                                          V00792, 
+                                          V00797, 
+                                          V00802, 
+                                          V00807, 
+                                          V00812, 
+                                          V00817, 
+                                          V00822)))
+
+#Coluna Totais Amarelos
+
+dt <- dt %>%
+        mutate(Amarelo = rowSums(select(., 
+                                      V00659, 
+                                      V00664, 
+                                      V00669, 
+                                      V00674, 
+                                      V00679, 
+                                      V00684, 
+                                      V00689, 
+                                      V00694, 
+                                      V00699, 
+                                      V00704, 
+                                      V00709, 
+                                      V00714, 
+                                      V00719)))
+#Coluna Totais Amarelos Alfabetizados
+dt <- dt %>%
+        mutate(AmareloAlf = rowSums(select(., 
+                                         V00763, 
+                                         V00768, 
+                                         V00773, 
+                                         V00778, 
+                                         V00783, 
+                                         V00788, 
+                                         V00793, 
+                                         V00798, 
+                                         V00803, 
+                                         V00808, 
+                                         V00813, 
+                                         V00818, 
+                                         V00823)))
+
+#Coluna Totais Pardos
+
+dt <- dt %>%
+        mutate(Pardos = rowSums(select(., 
+                                        V00660, 
+                                        V00665, 
+                                        V00670, 
+                                        V00675, 
+                                        V00680, 
+                                        V00685, 
+                                        V00690, 
+                                        V00695, 
+                                        V00700, 
+                                        V00705, 
+                                        V00710, 
+                                        V00715, 
+                                        V00720)))
+#Coluna Totais Pardos Alfabetizados
+dt <- dt %>%
+        mutate(PardosAlf = rowSums(select(., 
+                                           V00764, 
+                                           V00769, 
+                                           V00774, 
+                                           V00779, 
+                                           V00784, 
+                                           V00789, 
+                                           V00794, 
+                                           V00799, 
+                                           V00804, 
+                                           V00809, 
+                                           V00814, 
+                                           V00819, 
+                                           V00824)))
+
+#Coluna Totais Indigenas
+
+dt <- dt %>%
+        mutate(Indigenas = rowSums(select(., 
+                                       V00661, 
+                                       V00666, 
+                                       V00671, 
+                                       V00676, 
+                                       V00681, 
+                                       V00686, 
+                                       V00691, 
+                                       V00696, 
+                                       V00701, 
+                                       V00706, 
+                                       V00711, 
+                                       V00716, 
+                                       V00721)))
+#Coluna Totais Indigenas Alfabetizados
+dt <- dt %>%
+        mutate(IndigenasAlf = rowSums(select(., 
+                                          V00765, 
+                                          V00770, 
+                                          V00775, 
+                                          V00780, 
+                                          V00785, 
+                                          V00790, 
+                                          V00795, 
+                                          V00800, 
+                                          V00805, 
+                                          V00810, 
+                                          V00815, 
+                                          V00820, 
+                                          V00825)))
+
+#Taxa Brancos nao alfabetizados
+TxBrBran <- round(100*(sum(dt$Branca)-sum(dt$BrancaAlf))/sum(dt$Branca), digits = 1)
+TxBrPret <- round(100*(sum(dt$Preto)-sum(dt$PretoAlf))/sum(dt$Preto), digits = 1)
+TxBrAmarelo <- round(100*(sum(dt$Amarelo)-sum(dt$AmareloAlf))/sum(dt$Amarelo), digits = 1)
+TxBrPardos <- round(100*(sum(dt$Pardos)-sum(dt$PardosAlf))/sum(dt$Pardos), digits = 1)
+TxBrIndigenas <- round(100*(sum(dt$Indigenas)-sum(dt$IndigenasAlf))/sum(dt$Indigenas), digits = 1)
+
 
 ##################################################################################
 library(geobr)
