@@ -100,6 +100,21 @@ resultado <- data.frame(
 # Exibir o resultado
 htmlTable::htmlTable(resultado, caption = "Taxa de Não Alfabetizados")
 
+url2 <- "~/GitHub/Censo2022/Dados/Tab1_1_1_2010.csv"
+
+# Passo 1: Pegue o cabeçalho correto
+colunas <- names(fread(url2, encoding = "Latin-1", sep = ";", header = TRUE, nrows = 1))
+
+# Passo 2: Leia o arquivo, pulando as 6 primeiras linhas
+dt2010 <- fread(url2, 
+                encoding = "Latin-1", 
+                sep = ";", 
+                header = FALSE, 
+                skip = 7)
+
+# Passo 3: Atribua os nomes de coluna corretos ao data.table
+setnames(dt2010, colunas)
+
 #Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, segundo a cor ou raca
 #Coluna Totais Brancos
 

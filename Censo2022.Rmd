@@ -14,9 +14,11 @@ knitr::opts_chunk$set(echo = FALSE)
 
 [Dicionario de Dados Agregados por Setor Censitário](https://ftp.ibge.gov.br/Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/dicionario_de_dados_agregados_por_setores_censitarios.xlsx)
 
-[Censo 2022 - Dados de Alfabetização por Municipio](https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html?caminho=Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/Agregados_por_Municipio_csv/)
+[Censo 2022 - Dados de Alfabetização por Município](https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html?caminho=Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/Agregados_por_Municipio_csv/)
 
-[Censo 2010 - Dados de Alfabetização por Municipio]()
+[Censo 2010 - Dados de Alfabetização do Brasil](https://ftp.ibge.gov.br/Censos/Censo_Demografico_2010/Educacao_e_Deslocamento/xls/brasil_xls.zip)
+
+No site do IBGE não encontrei os dados de alfabetização por município em um único banco de dados. Teria que pegar, município por município! Ao clicar no link fazemos o download de uma pasta em formato .zip com diversas planilhas comprimidas. Utilizei a planilha tab1_1_1.xls, esta contém os dados de alfabetização do Brasil observados em 2010.
 
 
 [Publicação do IBGE Com Resultados Relacionados a Alfabetização](https://biblioteca.ibge.gov.br/visualizacao/periodicos/3108/cd_2022_alfabetizacao.pdf)
@@ -142,75 +144,55 @@ htmlTable::htmlTable(resultado, caption = "Taxa de Não Alfabetizados")
 A Publicação do IBGE Com Resultados Relacionados a Alfabetização cujo link foi 
 indicado no inicio deste texto apresenta o gráfico de barras abaixo.
 
-![Exemplo de Imagem](https://raw.githack.com/fsbmat-ufv/Censo2022/main/images/Idade.png)
-
-
-
-Observe que nossos resultados do Censo 2022 diferem dos resultados apresentados no gráfico do IBGE para as categorias 60 a 64 anos e 65 ou mais anos. Além disso, observamos também
-
-
-
-
-###  
-
-
-
-
-
-Write the R code required to add two plus two:
-
-```{r two-plus-two, exercise=TRUE}
+```{r im1, fig.align='center'}
+knitr::include_graphics("images/Idade.png")
 
 ```
 
-### Exercise with Code
+Observe que nossos resultados do Censo 2022 diferem dos resultados apresentados no gráfico do IBGE apenas para as categorias 60 a 64 anos e 65 ou mais anos. Já relacionando os dados de 2010, observamos que a tabela nos apresenta categorias diferentes das apresentadas na imagem do IBGE, além disso, as que são iguais diferem nos resultados.
 
-*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+```{r censo2010, exercise = TRUE, warning=FALSE, message=FALSE, exercise.eval=TRUE}
+url2 <- "~/GitHub/Censo2022/Dados/Tab1_1_1_2010.csv"
 
-Now write a function that adds any two numbers and then call it:
+# Passo 1: Pegue o cabeçalho correto
+colunas <- names(fread(url2, encoding = "Latin-1", sep = ";", header = TRUE, nrows = 1))
 
-```{r add-function, exercise=TRUE, exercise.lines = 5}
-add <- function() {
-  
-}
-```
+# Passo 2: Leia o arquivo, pulando as 6 primeiras linhas
+dt2010 <- fread(url2, 
+                encoding = "Latin-1", 
+                sep = ";", 
+                header = FALSE,
+                dec = ",",
+                skip = 7)
 
-## Topic 2
+# Passo 3: Atribua os nomes de coluna corretos ao data.table
+setnames(dt2010, colunas)
+dt2010[, Idade := trimws(Idade)]
+Tot10Br1519 <- round(100*dt2010[Idade == "15 a 19 anos", NuncaFreq]/dt2010[Idade == "15 a 19 anos", Total], digits = 2)
+Tot10Br2024 <- round(100*dt2010[Idade == "20 a 24 anos", NuncaFreq]/dt2010[Idade == "20 a 24 anos", Total], digits = 2)
+Tot10Br2529 <- round(100*dt2010[Idade == "25 a 29 anos", NuncaFreq]/dt2010[Idade == "25 a 29 anos", Total], digits = 2)
+Tot10Br3039 <- round(100*dt2010[Idade == "30 a 39 anos", NuncaFreq]/dt2010[Idade == "30 a 39 anos", Total], digits = 2)
+Tot10Br4049 <- round(100*dt2010[Idade == "40 a 49 anos", NuncaFreq]/dt2010[Idade == "40 a 49 anos", Total], digits = 2)
+Tot10Br5059 <- round(100*dt2010[Idade == "50 a 59 anos", NuncaFreq]/dt2010[Idade == "50 a 59 anos", Total], digits = 2)
+Tot10Br6099 <- round(100*dt2010[Idade == "60 anos ou mais", NuncaFreq]/dt2010[Idade == "60 anos ou mais", Total], digits = 2)
 
-### Exercise with Hint
-
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
-
-Modify the following code to limit the number of rows printed to 5:
-
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
-```
-
-```{r print-limit-hint}
-head(mtcars)
-```
-
-### Quiz
-
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
-
-Some questions to verify that you understand the purposes of various base and recommended R packages:
-
-```{r quiz}
-quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
-  ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
-  )
+resultado2 <- data.frame(
+        "15 a 19 anos" = Tot10Br1519,
+        "20 a 24 anos" = Tot10Br2024,
+        "25 a 29 anos" = Tot10Br2529,
+        "30 a 39 anos" = Tot10Br3039,
+        "40 a 49 anos" = Tot10Br4049,
+        "50 a 59 anos" = Tot10Br5059,
+        "60 ou mais anos" = Tot10Br6099,
+        row.names = "Censo 2010", # Define o nome da linha como 'Censo 2022'
+        check.names = FALSE
 )
+
+# Exibir o resultado
+htmlTable::htmlTable(resultado2, caption = "Taxa de Não Alfabetizados")
+
+
 ```
+
+Observe que a taxa de 2010 na categoria de 15 a 19 anos é de 2,2 já a calculada a partir dos dados disponibilizados é de `r Tot10Br1519`.
 
