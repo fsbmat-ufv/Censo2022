@@ -142,12 +142,11 @@ htmlTable::htmlTable(resultado, caption = "Taxa de Não Alfabetizados")
 A Publicação do IBGE Com Resultados Relacionados a Alfabetização cujo link foi 
 indicado no inicio deste texto apresenta o gráfico de barras abaixo.
 
-```{r im1, fig.align='center'}
-knitr::include_graphics("images/Idade.png")
+![Exemplo de Imagem](https://raw.githack.com/fsbmat-ufv/Censo2022/main/images/Idade.png)
 
-```
 
-Observe que nossos resultados do Censo 2022 diferem dos resultados apresentados no gráfico do IBGE para as categorias 60 a 64 anos e 65 ou mais anos.
+
+Observe que nossos resultados do Censo 2022 diferem dos resultados apresentados no gráfico do IBGE para as categorias 60 a 64 anos e 65 ou mais anos. Além disso, observamos também
 
 
 
