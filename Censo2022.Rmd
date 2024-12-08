@@ -1,0 +1,119 @@
+---
+title: "Censo 2022"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Endereço das Planilhas
+
+[Dicionario de Dados Agregados por Setor Censitário](https://ftp.ibge.gov.br/Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/dicionario_de_dados_agregados_por_setores_censitarios.xlsx)
+
+[Censo 2022 - Dados de Alfabetização por Municipio](https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html?caminho=Censos/Censo_Demografico_2022/Agregados_por_Setores_Censitarios/Agregados_por_Municipio_csv/)
+
+[Censo 2010 - Dados de Alfabetização por Municipio]()
+
+
+[Publicação do IBGE Com Resultados Relacionados a Alfabetização](https://biblioteca.ibge.gov.br/visualizacao/periodicos/3108/cd_2022_alfabetizacao.pdf)
+
+É apresentada aqui uma breve análise dos resultados do quesito sobre alfabetização 
+presente no Questionário Básico do Censo Demográfico de 2022. Para tanto, recorre-se 
+ao indicador de taxa de alfabetização das pessoas de 15 anos ou mais de idade e 
+ao seu **complemento**, taxa de analfabetismo das pessoas de 15 anos ou mais de idade, 
+conforme sugerido pelo documento “Princípios e Recomendações para os Censos Populacionais”, 
+elaborado pela Divisão de Estatística da ONU. Os resultados são analisados em 
+seis seções: desagregações por grupos de idade, cor ou raça, sexo, tamanho dos 
+municípios, regiões geográficas e pessoas indígenas.
+
+Os resultados do Censo Demográfico 2022 mostram que, no País, havia 163 milhões
+de pessoas de 15 anos ou mais de idade, das quais 151,5 milhões sabiam ler e escrever
+um bilhete simples e 11,4 milhões não sabiam sequer ler e escrever um bilhete simples.
+A partir desses totais populacionais, a taxa de alfabetização foi 93,0% em 2022 e, 
+consequentemente, a taxa de analfabetismo foi 7,0% deste contingente populacional. 
+
+*Leitura dos Dados*
+
+```{r Leitura}
+library("tidyverse")
+library("data.table")
+library("abjutils")
+#setwd("~/Github/DadosCenso2022")
+url <- "~/GitHub/Censo2022/Dados/Agregados_por_municipios_alfabetizacao_BR.csv"
+#url <- "~/GitHub/Censo2022/Dados/Agregados_por_setores_alfabetizacao_BR.csv"
+
+dt <- fread(url,
+            encoding = "Latin-1",
+            sep = ";",
+            header = TRUE)
+
+```
+
+
+###  
+
+
+
+
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+### Exercise with Code
+
+*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+
+Now write a function that adds any two numbers and then call it:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+## Topic 2
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+
