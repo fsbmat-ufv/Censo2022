@@ -32,6 +32,9 @@ dt <- dt %>%
         mutate(Alfab = rowSums(select(., V00748:V00760)))
 Alfab <- dt %>% select(Alfab) %>% summarise(sum(Alfab))
 
+TXTotalNAlf <- round(((Total-Alfab)/Total)*100, digits = 2)
+
+
 #Coluna 65 anos ou mais por cidade
 
 dt <- dt %>%
@@ -99,6 +102,7 @@ resultado <- data.frame(
         check.names = FALSE
 )
 
+
 # Exibir o resultado
 htmlTable::htmlTable(resultado, caption = "Taxa de Não Alfabetizados")
 
@@ -126,6 +130,71 @@ Tot10Br4044 <- 100*dt2010[Idade == "40 a 49 anos", NuncaFreq]/dt2010[Idade == "4
 Tot10Br5054 <- 100*dt2010[Idade == "50 a 59 anos", NuncaFreq]/dt2010[Idade == "50 a 59 anos", Total]
 Tot10Br6064 <- 100*dt2010[Idade == "60 anos ou mais", NuncaFreq]/dt2010[Idade == "60 anos ou mais", Total]
 
+
+# Passo 3: Atribua os nomes de coluna corretos ao data.table
+setnames(dt2010, colunas)
+dt2010[, Idade := trimws(Idade)]
+Tot10Br1519 <- round(100*dt2010[Idade == "15 a 19 anos", NuncaFreq]/dt2010[Idade == "15 a 19 anos", Total], digits = 2)
+Tot10Br2024 <- round(100*dt2010[Idade == "20 a 24 anos", NuncaFreq]/dt2010[Idade == "20 a 24 anos", Total], digits = 2)
+Tot10Br2529 <- round(100*dt2010[Idade == "25 a 29 anos", NuncaFreq]/dt2010[Idade == "25 a 29 anos", Total], digits = 2)
+Tot10Br3039 <- round(100*dt2010[Idade == "30 a 39 anos", NuncaFreq]/dt2010[Idade == "30 a 39 anos", Total], digits = 2)
+Tot10Br4049 <- round(100*dt2010[Idade == "40 a 49 anos", NuncaFreq]/dt2010[Idade == "40 a 49 anos", Total], digits = 2)
+Tot10Br5059 <- round(100*dt2010[Idade == "50 a 59 anos", NuncaFreq]/dt2010[Idade == "50 a 59 anos", Total], digits = 2)
+Tot10Br6099 <- round(100*dt2010[Idade == "60 anos ou mais", NuncaFreq]/dt2010[Idade == "60 anos ou mais", Total], digits = 2)
+
+resultado2 <- data.frame(
+        "15 a 19 anos" = Tot10Br1519,
+        "20 a 24 anos" = Tot10Br2024,
+        "25 a 29 anos" = Tot10Br2529,
+        "30 a 39 anos" = Tot10Br3039,
+        "40 a 49 anos" = Tot10Br4049,
+        "50 a 59 anos" = Tot10Br5059,
+        "60 ou mais anos" = Tot10Br6099,
+        row.names = "Censo 2010", # Define o nome da linha como 'Censo 2022'
+        check.names = FALSE
+)
+
+# Exibir o resultado
+htmlTable::htmlTable(resultado2, caption = "Taxa de Não Alfabetizados")
+
+# Dados
+dados <- data.frame(
+        faixa_etaria = c("15 a 19 anos", "20 a 24 anos", "25 a 29 anos", "30 a 34 anos", "35 a 39 anos",
+                         "40 a 44 anos", "45 a 49 anos", "50 a 54 anos", "55 a 59 anos", 
+                         "60 a 64 anos", "65 anos ou mais"),
+        ano_2000 = c(5.0, 6.7, 8.0, 9.7, 10.8, 12.4, 15.7, 20.3, 25.5, 29.1, 38.0),
+        ano_2010 = c(as.numeric(unlist(resultado2))[1:3],rep(0,8)),
+        ano_2022 = as.numeric(unlist(resultado))
+)
+
+# Transformando os dados para o formato longo
+dados_long <- dados %>%
+        tidyr::pivot_longer(cols = starts_with("ano"), 
+                            names_to = "ano", 
+                            values_to = "taxa_analfabetismo") %>%
+        mutate(ano = gsub("ano_", "", ano))  # Remove o prefixo "ano_"
+
+# Criando o gráfico
+ggplot(dados_long, aes(x = faixa_etaria, y = taxa_analfabetismo, fill = ano)) +
+        geom_bar(stat = "identity", position = position_dodge()) +
+        geom_text(
+                aes(label = taxa_analfabetismo),
+                position = position_dodge(width = 0.9),
+                vjust = -0.5, # Ajuste para posicionar acima das barras
+                size = 3
+        ) +
+        scale_fill_manual(values = c("2000" = "#1f78b4", "2010" = "#a6cee3", "2022" = "#ffbf00")) +
+        labs(
+                title = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade,\nsegundo os grupos de idade - Brasil - 2000/2022",
+                x = NULL,
+                y = "%",
+                fill = "Ano"
+        ) +
+        theme_minimal() +
+        theme(
+                plot.title = element_text(hjust = 0.5, size = 14),
+                axis.text.x = element_text(angle = 45, hjust = 1)
+        )
 
 #Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, segundo a cor ou raca
 #Coluna Totais Brancos
@@ -299,12 +368,53 @@ dt <- dt %>%
                                           V00825)))
 
 #Taxa Brancos nao alfabetizados
-TxBrBran <- round(100*(sum(dt$Branca)-sum(dt$BrancaAlf))/sum(dt$Branca), digits = 1)
-TxBrPret <- round(100*(sum(dt$Preto)-sum(dt$PretoAlf))/sum(dt$Preto), digits = 1)
-TxBrAmarelo <- round(100*(sum(dt$Amarelo)-sum(dt$AmareloAlf))/sum(dt$Amarelo), digits = 1)
-TxBrPardos <- round(100*(sum(dt$Pardos)-sum(dt$PardosAlf))/sum(dt$Pardos), digits = 1)
+TxBrBran      <- round(100*(sum(dt$Branca)-sum(dt$BrancaAlf))/sum(dt$Branca), digits = 1)
+TxBrPret      <- round(100*(sum(dt$Preto)-sum(dt$PretoAlf))/sum(dt$Preto), digits = 1)
+TxBrAmarelo   <- round(100*(sum(dt$Amarelo)-sum(dt$AmareloAlf))/sum(dt$Amarelo), digits = 1)
+TxBrPardos    <- round(100*(sum(dt$Pardos)-sum(dt$PardosAlf))/sum(dt$Pardos), digits = 1)
 TxBrIndigenas <- round(100*(sum(dt$Indigenas)-sum(dt$IndigenasAlf))/sum(dt$Indigenas), digits = 1)
 
+cor <- c(TxBrBran, TxBrPret, TxBrAmarelo, TxBrPardos, TxBrIndigenas)
+
+
+# Dados
+dados <- data.frame(
+        Descricao = c("Total", "Branca", "Preta", "Amarela", "Parda",
+                         "Indígena"),
+        ano_2010 = c(9.6,5.9,14.4,8.7,13,23.3),
+        ano_2022 = as.numeric(c(TXTotalNAlf,cor)))
+
+# Garantindo a ordem específica da coluna Descricao
+dados$Descricao <- factor(dados$Descricao, levels = c("Total", "Branca", "Preta", "Amarela", "Parda", "Indígena"))
+
+# Transformando os dados para o formato longo
+dados_long <- dados %>%
+        tidyr::pivot_longer(cols = starts_with("ano"), 
+                            names_to = "ano", 
+                            values_to = "taxa_analfabetismo") %>%
+        mutate(ano = gsub("ano_", "", ano))  # Remove o prefixo "ano_"
+
+# Criando o gráfico
+ggplot(dados_long, aes(x = Descricao, y = taxa_analfabetismo, fill = ano)) +
+        geom_bar(stat = "identity", position = position_dodge()) +
+        geom_text(
+                aes(label = taxa_analfabetismo),
+                position = position_dodge(width = 0.9),
+                vjust = -0.5, # Ajuste para posicionar acima das barras
+                size = 3
+        ) +
+        scale_fill_manual(values = c("2010" = "#1f78b4", "2022" = "#a6cee3")) +
+        labs(
+                title = "Taxa de analfabetismo das pessoas de 15 anos ou mais de idade,\nsegundo os grupos de Raça ou Cor - Brasil - 2010/2022",
+                x = NULL,
+                y = "%",
+                fill = "Ano"
+        ) +
+        theme_minimal() +
+        theme(
+                plot.title = element_text(hjust = 0.5, size = 14),
+                axis.text.x = element_text(angle = 45, hjust = 1)
+        )
 
 ##################################################################################
 library(geobr)
