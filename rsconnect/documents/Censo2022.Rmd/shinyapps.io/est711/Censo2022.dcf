@@ -1,0 +1,13 @@
+name: Censo2022
+title: Censo2022
+username: est711
+account: est711
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13553673
+bundleId: 9483946
+url: https://est711.shinyapps.io/Censo2022/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|CodeInit.R|DicionarioDados.xlsx|DicionariosDados/cd_2022_alfabetizacao.pdf|DicionariosDados/dicionario_de_dados_agregados_por_setores_censitarios.xlsx|DicionariosDados/liv102136.pdf|www/Idade.png

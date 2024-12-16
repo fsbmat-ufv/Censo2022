@@ -6,8 +6,10 @@ library("tidyverse")
 library("data.table")
 library("abjutils")
 #setwd("~/Github/DadosCenso2022")
-url <- "~/GitHub/Censo2022/Dados/Agregados_por_municipios_alfabetizacao_BR.csv"
+#url <- "https://raw.githack.com/fsbmat-ufv/Censo2022/refs/heads/main/Dados/Agregados_por_municipios_alfabetizacao_BR.csv"
 #url <- "~/GitHub/Censo2022/Dados/Agregados_por_setores_alfabetizacao_BR.csv"
+url <- "Dados/Populacao_residente_por_situacao_do_domicilio_municipios.csv"
+
 
 dt <- fread(url,
             encoding = "Latin-1",
@@ -100,8 +102,8 @@ resultado <- data.frame(
 # Exibir o resultado
 htmlTable::htmlTable(resultado, caption = "Taxa de Não Alfabetizados")
 
-url2 <- "~/GitHub/Censo2022/Dados/Tab1_1_1_2010.csv"
-
+#url2 <- "~/GitHub/Censo2022/Dados/Tab1_1_1_2010.csv"
+url2 <- "https://raw.githack.com/fsbmat-ufv/Censo2022/refs/heads/main/Dados/Tab1_1_1_2010.csv"
 # Passo 1: Pegue o cabeçalho correto
 colunas <- names(fread(url2, encoding = "Latin-1", sep = ";", header = TRUE, nrows = 1))
 
@@ -109,11 +111,21 @@ colunas <- names(fread(url2, encoding = "Latin-1", sep = ";", header = TRUE, nro
 dt2010 <- fread(url2, 
                 encoding = "Latin-1", 
                 sep = ";", 
-                header = FALSE, 
+                header = FALSE,
+                dec = ",",
                 skip = 7)
 
 # Passo 3: Atribua os nomes de coluna corretos ao data.table
 setnames(dt2010, colunas)
+dt2010[, Idade := trimws(Idade)]
+Tot10Br1519 <- 100*dt2010[Idade == "15 a 19 anos", NuncaFreq]/dt2010[Idade == "15 a 19 anos", Total]
+Tot10Br2024 <- 100*dt2010[Idade == "20 a 24 anos", NuncaFreq]/dt2010[Idade == "20 a 24 anos", Total]
+Tot10Br2529 <- 100*dt2010[Idade == "25 a 29 anos", NuncaFreq]/dt2010[Idade == "25 a 29 anos", Total]
+Tot10Br3034 <- 100*dt2010[Idade == "30 a 39 anos", NuncaFreq]/dt2010[Idade == "30 a 39 anos", Total]
+Tot10Br4044 <- 100*dt2010[Idade == "40 a 49 anos", NuncaFreq]/dt2010[Idade == "40 a 49 anos", Total]
+Tot10Br5054 <- 100*dt2010[Idade == "50 a 59 anos", NuncaFreq]/dt2010[Idade == "50 a 59 anos", Total]
+Tot10Br6064 <- 100*dt2010[Idade == "60 anos ou mais", NuncaFreq]/dt2010[Idade == "60 anos ou mais", Total]
+
 
 #Taxa de analfabetismo das pessoas de 15 anos ou mais de idade, segundo a cor ou raca
 #Coluna Totais Brancos
@@ -299,8 +311,9 @@ library(geobr)
 library(sf)
 # carregando shape files de todos municipios do Brasil
 mun <- read_municipality(code_muni="all", year=2022)
+#dt$COD_MUN <- as.numeric(as.character(dt$COD_MUN))
 ###############Juntando os bancos de dados
-dt <- left_join(mun, dt, by= c("code_muni" = "CD_MUN"))
+dt <- left_join(mun, dt, by= c("code_muni" = "COD_MUN"))
 rm(mun)
 
 analf <- dt %>% 
@@ -315,7 +328,7 @@ TotEst <- dt %>%
         group_by(name_state) %>% 
         summarise(Alf1519=sum(V00644))
 
-ggplot() + geom_sf(data=dt, aes(fill= alf1519))
+#ggplot() + geom_sf(data=dt, aes(fill= alf1519))
 
 library(leaflet)
 
