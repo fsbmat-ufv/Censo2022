@@ -18,7 +18,7 @@ widths <- c(
         2, 5, 13, 8, 16, 1, 2, 3, 2, 1, 2, 2, 1, 6, 9, 1, 2, 3, 2, 3,
         1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
         1, 1, 7, 10, 8, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1)#Li o arquivo de RO
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1)
 
 col_names <- c(
         "V0001", "V0002", "V0011", "V0300", "V0010", "V1001", "V1002", "V1003", "V1004", "V1006",
@@ -32,8 +32,9 @@ col_names <- c(
 length(col_names)
 
 # Leitura do arquivo posicional
+library(readr)
 
-dados <- readr::read_fwf(
+dados <- read_fwf(
         file = arquivo,
         fwf_widths(widths, col_names = col_names),  # <- aqui sim colocamos os nomes
         col_types = cols(.default = "c"),           # lê tudo como caractere para evitar problemas
